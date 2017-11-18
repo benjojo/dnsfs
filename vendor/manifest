@@ -2,11 +2,45 @@
 	"version": 0,
 	"dependencies": [
 		{
+			"importpath": "github.com/oschwald/geoip2-golang",
+			"repository": "https://github.com/oschwald/geoip2-golang",
+			"vcs": "git",
+			"revision": "5b1dc16861f81d05d9836bb21c2d0d65282fc0b8",
+			"branch": "master",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/oschwald/maxminddb-golang",
+			"repository": "https://github.com/oschwald/maxminddb-golang",
+			"vcs": "git",
+			"revision": "26fe5ace1c706491c2936119e1dc69c1a9c04d7f",
+			"branch": "master",
+			"notests": true
+		},
+		{
 			"importpath": "github.com/wadey/gocovmerge",
 			"repository": "https://github.com/wadey/gocovmerge",
 			"vcs": "git",
 			"revision": "b5bfa59ec0adc420475f97f89b58045c721d761c",
 			"branch": "master",
+			"notests": true
+		},
+		{
+			"importpath": "golang.org/x/sys/unix",
+			"repository": "https://go.googlesource.com/sys",
+			"vcs": "git",
+			"revision": "0dd5e194bbf5eb84a39666eb4c98a4d007e4203a",
+			"branch": "master",
+			"path": "/unix",
+			"notests": true
+		},
+		{
+			"importpath": "golang.org/x/sys/windows",
+			"repository": "https://go.googlesource.com/sys",
+			"vcs": "git",
+			"revision": "0dd5e194bbf5eb84a39666eb4c98a4d007e4203a",
+			"branch": "master",
+			"path": "windows",
 			"notests": true
 		},
 		{
