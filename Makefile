@@ -9,11 +9,14 @@ IMPORT_PATH := github.com/benjojo/dnsfs
 IGNORED_PACKAGES := /vendor/
 
 .PHONY: all
-all: build
+all: build builddnsr
 
 .PHONY: build
 build: .GOPATH/.ok
 	$Q go install $(if $V,-v) $(VERSION_FLAGS) $(IMPORT_PATH)/bulk-mmlookup
+
+builddnsr: .GOPATH/.ok
+	$Q go install $(if $V,-v) $(VERSION_FLAGS) $(IMPORT_PATH)/retention-check
 
 ### Code not in the repository root? Another binary? Add to the path like this.
 # .PHONY: otherbin
