@@ -9,7 +9,7 @@ IMPORT_PATH := github.com/benjojo/dnsfs
 IGNORED_PACKAGES := /vendor/
 
 .PHONY: all
-all: build builddnsr
+all: build builddnsr builddnss
 
 .PHONY: build
 build: .GOPATH/.ok
@@ -17,6 +17,9 @@ build: .GOPATH/.ok
 
 builddnsr: .GOPATH/.ok
 	$Q go install $(if $V,-v) $(VERSION_FLAGS) $(IMPORT_PATH)/retention-check
+
+builddnss: .GOPATH/.ok
+	$Q go install $(if $V,-v) $(VERSION_FLAGS) $(IMPORT_PATH)/retention-stats
 
 ### Code not in the repository root? Another binary? Add to the path like this.
 # .PHONY: otherbin
