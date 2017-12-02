@@ -9,10 +9,13 @@ IMPORT_PATH := github.com/benjojo/dnsfs
 IGNORED_PACKAGES := /vendor/
 
 .PHONY: all
-all: build builddnsr builddnss builddnsvc
+all: build buildmml builddnsr builddnss builddnsvc
 
 .PHONY: build
 build: .GOPATH/.ok
+	$Q go install $(if $V,-v) $(VERSION_FLAGS) $(IMPORT_PATH)/dnsfs
+
+buildmml: .GOPATH/.ok
 	$Q go install $(if $V,-v) $(VERSION_FLAGS) $(IMPORT_PATH)/bulk-mmlookup
 
 builddnsr: .GOPATH/.ok
