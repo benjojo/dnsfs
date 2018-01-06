@@ -1,11 +1,14 @@
 package main
 
 import (
+	"crypto/md5"
+	"fmt"
 	"log"
 	"net"
+	"strconv"
 	"strings"
 
-	"fmt"
+	"time"
 
 	"github.com/miekg/dns"
 )
@@ -23,6 +26,7 @@ type storageRequest struct {
 var uploadPendingMap map[string]storageRequest
 
 func DNSLoop(socket net.PacketConn) {
+	uploadPendingMap = make(map[string]storageRequest)
 	for {
 		dnsin := make([]byte, 1500)
 		inbytes, inaddr, err := socket.ReadFrom(dnsin)
@@ -54,7 +58,7 @@ func DNSLoop(socket net.PacketConn) {
 			content = "kittens"
 		} else {
 			content = uploadPendingMap[queryname].content
-			uploadPendingMap[queryname].storageNotifications <- true
+			// uploadPendingMap[queryname].storageNotifications <- true
 			tmp := uploadPendingMap[queryname]
 			tmp.replications++
 			uploadPendingMap[queryname] = tmp
@@ -97,4 +101,61 @@ func verifyNSsetup(name string) bool {
 	}
 
 	return true
+}
+
+func uploadChunk(filename string, chunk int, data string) {
+	endpoints := make([]string, 0)
+	queryname := ""
+	for replications := 0; replications < 3; replications++ {
+		var IP string
+		IP, queryname = getDNSserverShard(filename, chunk, replications)
+		endpoints = append(endpoints, IP)
+	}
+
+	// replies := make(chan bool)
+	uploadPendingMap[queryname] = storageRequest{
+		content:      data,
+		replications: 0,
+		// storageNotifications: replies,
+	}
+
+	m1 := new(dns.Msg)
+	m1.Id = dns.Id()
+	m1.RecursionDesired = true
+	m1.Question = make([]dns.Question, 1)
+	m1.Question[0] = dns.Question{
+		Name:   fmt.Sprintf("%s.%s.", queryname, *dnsbase),
+		Qtype:  dns.TypeTXT,
+		Qclass: dns.ClassINET,
+	}
+	dnspacket, _ := m1.Pack()
+
+	for _, ip := range endpoints {
+		addr, _ := net.ResolveUDPAddr("udp", fmt.Sprintf("%s:53", string(ip)))
+		globalSender.WriteTo(dnspacket, addr)
+	}
+
+	tout := 0
+	for {
+		time.Sleep(time.Millisecond * 250)
+		if uploadPendingMap[queryname].replications != 0 {
+			return
+		}
+		if tout == 10 {
+			fmt.Printf("oops, I don't think chunk %s was stored at all... might have lost data :3\n", queryname)
+			return
+		}
+
+		tout++
+	}
+}
+
+func getDNSserverShard(filename string, chunk int, copy int) (IP string, query string) {
+	key := md5.Sum([]byte(fmt.Sprintf("%s.%d", filename, chunk)))
+	hashmini := fmt.Sprintf("%x%x%x%x%x%x",
+		key[0], key[1], key[2], key[3], key[4], key[5])
+	numberkey, _ := strconv.ParseInt(hashmini, 16, 64)
+	IP = ipList[(int(numberkey)+copy)%len(ipList)]
+	query = fmt.Sprintf("dfs-%s", hashmini)
+	return IP, query
 }
