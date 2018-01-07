@@ -42,6 +42,7 @@ func main() {
 	// }
 
 	http.HandleFunc("/upload", handleUpload)
+	http.HandleFunc("/fetch", handleDownload)
 	http.Handle("/metrics", promhttp.Handler())
 	log.Fatalf("Failed to listen on HTTP: %s", http.ListenAndServe(*baddr+":5050", nil))
 }

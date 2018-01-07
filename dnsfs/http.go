@@ -8,6 +8,23 @@ import (
 	"time"
 )
 
+func handleDownload(rw http.ResponseWriter, req *http.Request) {
+	if req.URL.Query().Get("name") == "" {
+		http.Error(rw, "Please supply a file name as ?name=", http.StatusInternalServerError)
+		return
+	}
+	filename := req.URL.Query().Get("name")
+	chunk := 0
+	for {
+		o := fetchFromShard(filename, chunk)
+		if len(o) == 0 {
+			return
+		}
+		chunk++
+		rw.Write(o)
+	}
+}
+
 func handleUpload(rw http.ResponseWriter, req *http.Request) {
 	if req.URL.Query().Get("name") == "" {
 		http.Error(rw, "Please supply a file name as ?name=", http.StatusInternalServerError)
