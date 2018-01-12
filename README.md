@@ -1,7 +1,7 @@
 # dnsfs
 Store your data in others DNS revolvers cache, True cloud storage!
 
-See blog post:
+See blog post: https://blog.benjojo.co.uk/post/dns-filesystem-true-cloud-storage-dnsfs
 
 
 tl;dr:
